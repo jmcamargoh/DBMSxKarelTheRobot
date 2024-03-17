@@ -1,3 +1,3 @@
-javac -d . -cp ".;KarelJRobot.jar" Minero.java
+javac -d . -cp ".;KarelJRobot.jar" Mina.java
 pause
 exit
