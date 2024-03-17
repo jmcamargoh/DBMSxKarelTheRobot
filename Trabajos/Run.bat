@@ -1,3 +1,3 @@
-java -cp ".;KarelJRobot.jar" Mina -m 2 -t 3 -e 1
+java -cp ".;KarelJRobot.jar" Mina -m 3 -t 2 -e 1
 pause
 exit

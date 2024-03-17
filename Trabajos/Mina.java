@@ -38,21 +38,21 @@ public class Mina implements Directions {
 
         // Crea los objetos especificados
         for (int i = 0; i < numMineros; i++) {
-            Minero minero = new Minero(12+i, 1, South, 0, negro);
+            Minero minero = new Minero(12+(i*2), 1, South, 0, negro);
             Thread mineroThread = new Thread(minero);
             mineros[i] = mineroThread;
             System.out.println("Se creó un objeto Minero");
         }
 
         for (int i = 0; i < numTrenes; i++) {
-            Tren tren = new Tren(12+i, 2, South, 0, azul);
+            Tren tren = new Tren(12+(i*2), 2, South, 0, azul);
             Thread trenThread = new Thread(tren);
             trenes[i] = trenThread;
             System.out.println("Se creó un objeto Tren");
         }
 
         for (int i = 0; i < numExtractores; i++) {
-            Extractor extractor = new Extractor(12+i, 3, South, 0, rojo);
+            Extractor extractor = new Extractor(12+(i*2), 3, South, 0, rojo);
             Thread extractorThread = new Thread(extractor);
             extractores[i] = extractorThread;
             System.out.println("Se creó un objeto Extractor");
