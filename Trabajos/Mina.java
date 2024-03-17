@@ -32,31 +32,38 @@ public class Mina implements Directions {
         if (numExtractores < 2)
             numExtractores = 2;
 
-        Minero mineros[] = new Minero[numMineros];
-        Tren trenes[] = new Tren[numTrenes];
-        Extractor extractores[] = new Extractor[numExtractores];
+        Thread mineros[] = new Thread[numMineros];
+        Thread trenes[] = new Thread[numTrenes];
+        Thread extractores[] = new Thread[numExtractores];
 
         // Crea los objetos especificados
         for (int i = 0; i < numMineros; i++) {
             Minero minero = new Minero(12+i, 1, South, 0, negro);
-            mineros[i] = minero;
-            System.out.println("Se creó un objeto Minero");
             Thread mineroThread = new Thread(minero);
+            mineros[i] = mineroThread;
+            System.out.println("Se creó un objeto Minero");
         }
 
         for (int i = 0; i < numTrenes; i++) {
-            Tren tren = new Tren(12 + i, 2, South, 0, azul);
-            trenes[i] = tren;
-            System.out.println("Se creó un objeto Tren");
+            Tren tren = new Tren(12+i, 2, South, 0, azul);
             Thread trenThread = new Thread(tren);
+            trenes[i] = trenThread;
+            System.out.println("Se creó un objeto Tren");
         }
 
         for (int i = 0; i < numExtractores; i++) {
-            Extractor extractor = new Extractor(12 + i, 3, South, 0, rojo);
-            extractores[i] = extractor;
-            System.out.println("Se creó un objeto Extractor");
+            Extractor extractor = new Extractor(12+i, 3, South, 0, rojo);
             Thread extractorThread = new Thread(extractor);
+            extractores[i] = extractorThread;
+            System.out.println("Se creó un objeto Extractor");
         }
 
+        for (Thread hilo:mineros){
+            hilo.start();
+        }
+
+        for (Thread hilo:extractores){
+            hilo.start();
+        }
     }
 }

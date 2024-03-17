@@ -9,7 +9,6 @@ public class Extractor extends Robot implements Runnable {
 
     public void race(){
         // Las acciones del extractor
-        move();
     }
 
     @Override

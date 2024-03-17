@@ -1,5 +1,8 @@
 import kareltherobot.*;
 import java.awt.Color;
+import java.util.concurrent.TimeUnit;
+
+import javax.management.timer.Timer;
 
 public class Minero extends Robot implements Runnable {
     public Minero(int Street, int Avenue, Direction direction, int beepers, Color color){
@@ -9,7 +12,13 @@ public class Minero extends Robot implements Runnable {
 
     public void race(){
         // Las acciones del minero
-        move();
+        while(frontIsClear()){
+            move();
+            TimeUnit.MILLISECONDS.sleep(1);
+            if (nextToARobot()){
+                turnOff();
+            }
+        }
     }
 
     @Override
