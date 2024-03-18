@@ -1,7 +1,9 @@
 import kareltherobot.*;
 import java.awt.Color;
+import java.util.concurrent.CountDownLatch;
 
 public class Mina implements Directions {
+
     public static void main(String[] args) {
         World.readWorld("Mina.kwld");
         World.setVisible(true);
@@ -32,34 +34,56 @@ public class Mina implements Directions {
         if (numExtractores < 2)
             numExtractores = 2;
 
+        CountDownLatch minerosLatch = new CountDownLatch(numMineros);
+        CountDownLatch trenesLatch = new CountDownLatch(numTrenes);
+        CountDownLatch extractoresLatch = new CountDownLatch(numExtractores);
+
         Thread mineros[] = new Thread[numMineros];
         Thread trenes[] = new Thread[numTrenes];
         Thread extractores[] = new Thread[numExtractores];
 
         // Crea los objetos especificados
         for (int i = 0; i < numMineros; i++) {
-            Minero minero = new Minero(12+(i*2), 1, South, 0, negro);
+            Minero minero = new Minero(12+(i*2), 1, South, 0, negro, minerosLatch);
             Thread mineroThread = new Thread(minero);
             mineros[i] = mineroThread;
             System.out.println("Se creó un objeto Minero");
         }
 
         for (int i = 0; i < numTrenes; i++) {
-            Tren tren = new Tren(12+(i*2), 2, South, 0, azul);
+            Tren tren = new Tren(12+(i*2), 2, South, 0, azul, trenesLatch);
             Thread trenThread = new Thread(tren);
             trenes[i] = trenThread;
             System.out.println("Se creó un objeto Tren");
         }
 
         for (int i = 0; i < numExtractores; i++) {
-            Extractor extractor = new Extractor(12+(i*2), 3, South, 0, rojo);
+            Extractor extractor = new Extractor(12+(i*2), 3, South, 0, rojo, extractoresLatch);
             Thread extractorThread = new Thread(extractor);
             extractores[i] = extractorThread;
             System.out.println("Se creó un objeto Extractor");
         }
 
+        // Iniciar los hilos
         for (Thread hilo:mineros){
             hilo.start();
+        }
+
+        // Esperar a que todos los mineros comiencen a moverse
+        try {
+            minerosLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (Thread hilo:trenes){
+            hilo.start();
+        }
+
+        try {
+            trenesLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         for (Thread hilo:extractores){

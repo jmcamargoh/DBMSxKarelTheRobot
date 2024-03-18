@@ -2,13 +2,15 @@ import kareltherobot.*;
 import java.awt.Color;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.CountDownLatch;
 
 public class Minero extends Robot implements Runnable {
     private static Lock lock = new ReentrantLock();
+    private CountDownLatch minerosLatch;
 
-    public Minero(int Street, int Avenue, Direction direction, int beepers, Color color){
+    public Minero(int Street, int Avenue, Direction direction, int beepers, Color color, CountDownLatch minerosLatch){
         super(Street, Avenue, direction, beepers, color);
+        this.minerosLatch = minerosLatch;
         World.setupThread(this);
     }
 
@@ -26,16 +28,17 @@ public class Minero extends Robot implements Runnable {
     }
 
     public void entrada(){
-        recto();
-        giro(1);
         lock.lock();
         try {
+            recto();
+            giro(1);
             move();
-            giro(3);
         } finally {
             lock.unlock();
         }
+        giro(3);
         recto();
+        minerosLatch.countDown(); // Disminuir el contador de minerosLatch una vez que el minero comienza a moverse
         giro(3);
         recto();
         giro(1);
