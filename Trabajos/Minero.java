@@ -9,6 +9,8 @@ public class Minero extends Robot implements Runnable {
     private static Lock lock1 = new ReentrantLock();
     private CountDownLatch minerosLatch;
     private static boolean primerMinero = true; // Variable para rastrear el primer minero
+    private static int contador = 0;    // Cuanto se ha sacado de una sola mena
+    private static int menas_acabadas = 0;  // Cuantas menas se han dejado ya vacias
 
     public Minero(int Street, int Avenue, Direction direction, int beepers, Color color, CountDownLatch minerosLatch) {
         super(Street, Avenue, direction, beepers, color);
@@ -77,9 +79,14 @@ public class Minero extends Robot implements Runnable {
         lock.lock();
         try {
             if (primerMinero) {
-                recto(); // Primer minero va al fondo
+                recto(6); // Primer minero va hasta la primera mena
             } else {
-                recto(8); // Segundo minero va una posición menos
+                recto(5); // Segundo minero va una posición menos
+                giroDerecha();
+                recto(1);
+                giroIzquierda();
+                recto(1);
+                giroIzquierda();
             }
         } finally {
             primerMinero = false; // Marcamos que el primer minero ya ha pasado
@@ -88,31 +95,55 @@ public class Minero extends Robot implements Runnable {
     }
 
     public void minecraft() {
-        for (int i = 0; i < 20; i++) {
-            pickBeeper();
-            if (primerMinero == false) {
-                primerMinero = true;
-            }
-        }
-        while (facingWest() == false) {
-            giroIzquierda();
-        }
         lock1.lock();
-        try {
-            if (primerMinero) {
-                recto(5); // Primer minero va al fondo
-                giroIzquierda();
-                recto(1); // hacer esperar a que el segundo entregue primero
+        while (contador <= 40) {
+            if (contador < 40) {
+                try {
+                    if (primerMinero == false) {
+                        for (int i = 0; i < 20; i++) {
+                            pickBeeper();
+                            contador++;
+                            System.out.println(contador);
+                        }
+                        cambioSentido();
+                        recto(1);
+                        primerMinero = true;
+                    } else {
+                        lock.lock();
+                        try {
+                            recto(1);
+                            giroDerecha();
+                            for (int i = 0; i < 20; i++) {
+                                pickBeeper();
+                                contador++;
+                                System.out.println(contador);
+                            }
+                            cambioSentido();
+                            recto(1);
+                        } finally {
+                            lock.unlock();
+                        }
+                    }
+                } finally {
+                    lock1.unlock();
+                }
+    
+                if (anyBeepersInBeeperBag()) {
+                    for (int i = 0; i < 20; i++) {
+                        putBeeper();
+                    }
+                    giroIzquierda();
+                    recto(1);
+                    giroIzquierda();
+                    recto(1);
+                    giroIzquierda();
+                }
             } else {
-                recto(3); // Segundo minero va una posición menos
-            }
-        } finally {
-            primerMinero = false; // Marcamos que el primer minero ya ha pasado
-            lock1.unlock();
+                // Aqui iria todo lo de pasar a otra mena, donde se debe reiniciar el contador y debe sumar 1 a menas_acabadas
+                // el problema es que no se porque no funciona correctamente la variable menas
+                // esa sirve para indicarle al robot que debe moverse un pasito mas a la derecha (siguiente mena)
+            }        
         }
-
-        // buscar algoritmo que me permita no estar chocandome y llevando a su punto
-        // necesario
     }
 
     public void race() {
