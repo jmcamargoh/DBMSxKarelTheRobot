@@ -13,6 +13,8 @@ public class Extractor extends Robot implements Runnable {
     private static boolean primerMinero = true; // Variable para rastrear el primer Extractor
     private boolean primerExtractorCompleto = false;
     private static int contador = 0; // Cuantos beepers se han dejado en el punto de extraccion
+    private static int filas = 0;   // Fila en donde almacena       
+    private static int columnas = 3;    // Columna en donde almacena
 
     public Extractor(int Street, int Avenue, Direction direction, int beepers, Color color,
             CountDownLatch extractoresLatch, int identificador) {
@@ -58,16 +60,16 @@ public class Extractor extends Robot implements Runnable {
     }
 
     public void entrada() {
-        lock.lock();
+        lock1.lock();
         try {
             // Cambiate esto
             giroDerecha();
             move();
             giroIzquierda();
+            recto();
         } finally {
-            lock.unlock();
+            lock1.unlock();
         }
-        recto();
         giroDerecha();
         move();
         extractoresLatch.countDown();
@@ -84,38 +86,42 @@ public class Extractor extends Robot implements Runnable {
         }
     }
 
-    public void extraccion_mina() {
-        while (contador < 21){
+    public void extraccion_mina() { // Habrá manera de optimizar la extracción?
+        while (contador < 21) {
             if (identificador == 1 && contador < 20) { // Primer Extractor (Dentro de la mina)
                 lock1.lock();
                 try {
                     recto(1);
                     cambioSentido();
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 5; i++) {   // Recolección en el punto de extracción
                         pickBeeper();
                         contador++;
-                        System.out.println("Contador = "+contador);
+                        System.out.println("Contador = " + contador);
                     }
                     recto();
                     giroDerecha();
                     recto(5);
-                    while (anyBeepersInBeeperBag()) {
+                    while (anyBeepersInBeeperBag()) {   // Entrega al segundo punto de extracción
                         putBeeper();
                     }
-                    cambioSentido();
+                    cambioSentido();    // Empieza el retorno a la posición inicial
                     recto(2);
                 } finally {
                     lock1.unlock();
                 }
                 recto();
                 giroIzquierda();
-    
+
             } else if (identificador == 2) { // Segundo Extractor (Para afuera de la mina)
                 lock1.lock();
                 try {
                     recto(1);
-                    while (nextToABeeper()) {
+                    for (int i = 0; i < 5; i++){    // Recolección en el segundo punto de extracción
                         pickBeeper();
+                    }
+                    if (filas == 4) {
+                        filas = 0;  // Empieza en la primera fila de la próxima columna
+                        columnas--; // Ya se llenó la columna, que vaya con la siguiente
                     }
                 } finally {
                     lock1.unlock();
@@ -127,17 +133,35 @@ public class Extractor extends Robot implements Runnable {
                 giroIzquierda();
                 recto(1);
                 giroDerecha();
-                recto(2);
-                while (anyBeepersInBeeperBag()) {
-                    putBeeper();
-                }
-                cambioSentido();
-                recto(2);
-                giroIzquierda();
-                recto();
+                recto(1);
                 giroDerecha();
                 recto();
                 giroIzquierda();
+                recto(columnas);
+                giroIzquierda();
+                recto(filas);
+                lock1.lock();
+                try {
+                    while (anyBeepersInBeeperBag()) {   // Entrega en el silo vacío del almacén
+                        putBeeper();
+                    }
+                    cambioSentido();
+                    recto(filas);
+                    giroDerecha();
+                    recto(columnas);
+                    giroDerecha();
+                    recto(1);
+                    giroIzquierda();
+                    recto(1);
+                    giroIzquierda();
+                    recto();
+                    giroDerecha();
+                    recto();
+                    giroIzquierda();
+                    filas++;    // Indica que esa fila ya se llenó para que siga a la próxima
+            } finally {
+                lock1.unlock();
+            }
             }
         }
     }
