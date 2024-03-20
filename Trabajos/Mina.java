@@ -6,7 +6,11 @@ public class Mina implements Directions {
 
     public static void main(String[] args) {
         World.readWorld("Mina.kwld");
+        Color verde = new Color(0, 255, 0);
+        World.setWorldColor(verde);
         World.setVisible(true);
+        World.setDelay(60);
+        World.showSpeedControl(true);
 
         int numMineros = 0;
         Color negro = new Color(0, 0, 0);
@@ -58,7 +62,7 @@ public class Mina implements Directions {
         }
 
         for (int i = 0; i < numExtractores; i++) {
-            Extractor extractor = new Extractor(12+(i*2), 3, South, 0, rojo, extractoresLatch);
+            Extractor extractor = new Extractor(12+(i*2), 3, South, 0, rojo, extractoresLatch, i+1);
             Thread extractorThread = new Thread(extractor);
             extractores[i] = extractorThread;
             System.out.println("Se creó un objeto Extractor");
