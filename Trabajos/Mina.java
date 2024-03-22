@@ -9,7 +9,7 @@ public class Mina implements Directions {
         Color verde = new Color(0, 255, 0);
         World.setWorldColor(verde);
         World.setVisible(true);
-        World.setDelay(60);
+        World.setDelay(30);
         World.showSpeedControl(true);
 
         int numMineros = 0;
@@ -49,7 +49,7 @@ public class Mina implements Directions {
 
         // Crea los objetos especificados
         for (int i = 0; i < numMineros; i++) {
-            Minero minero = new Minero(12 + (i * 2), 1, South, 0, negro, minerosLatch);
+            Minero minero = new Minero(12 + (i * 2), 1, South, 0, negro, minerosLatch, i + 1);
             Thread mineroThread = new Thread(minero);
             mineros[i] = mineroThread;
             System.out.println("Se creó un objeto Minero");

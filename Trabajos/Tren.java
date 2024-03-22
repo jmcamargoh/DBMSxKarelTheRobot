@@ -89,9 +89,24 @@ public class Tren extends Robot implements Runnable {
             giroIzquierda();
             recto();
             giroDerecha();
-            recto(5);
-            giroDerecha(); // punto de recolección
+            recto(4); // hacer el semaforo
+            try {
+                Controlador_Semaforos.semaforo_trenes.acquire();    // Conseguir la luz verde del semaforo
+                recto(1);   // punto de recoleccion
+                for (int i = 0; i < 20; i++){
+                    pickBeeper();
+                }
+                giroDerecha();
+                recto(2);
+            } catch (InterruptedException e){
+                e.printStackTrace();
+            } finally {
+                Controlador_Semaforos.semaforo_mineros.release();       // Dar la luz verde a los mineros
+            }
             recto();
+            while(anyBeepersInBeeperBag()){
+                putBeeper();
+            }
             giroDerecha();
             recto();
             giroIzquierda();
