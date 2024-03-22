@@ -85,13 +85,13 @@ public class Tren extends Robot implements Runnable {
 
     public void ciclo() {
         while (true) {
-            recto(5);
-            giroIzquierda();
             recto();
+            giroIzquierda();
+            recto();    // Semaforo 1
             giroDerecha();
-            recto(4); // hacer el semaforo
+            recto(4); // Semaforo 2
             try {
-                Controlador_Semaforos.semaforo_trenes.acquire();    // Conseguir la luz verde del semaforo
+                Controlador_Semaforos.semaforo_trenes_2.acquire();    // Conseguir la luz verde del semaforo
                 recto(1);   // punto de recoleccion
                 for (int i = 0; i < 20; i++){
                     pickBeeper();
@@ -101,17 +101,27 @@ public class Tren extends Robot implements Runnable {
             } catch (InterruptedException e){
                 e.printStackTrace();
             } finally {
-                Controlador_Semaforos.semaforo_mineros.release();       // Dar la luz verde a los mineros
+                Controlador_Semaforos.semaforo_mineros_2.release();       // Dar la luz verde a los mineros
             }
             recto();
-            while(anyBeepersInBeeperBag()){
-                putBeeper();
-            }
             giroDerecha();
-            recto();
+            recto();    // Semaforo 3
             giroIzquierda();
-            recto(5);
-            giroIzquierda(); // punto de entrega
+            recto();
+            giroDerecha(); // Semaforo 4
+            try {
+                Controlador_Semaforos.semaforo_trenes_4.acquire();
+                recto(1);
+                while(anyBeepersInBeeperBag()){
+                    putBeeper();
+                }
+                cambioSentido();
+                recto(1);
+            } catch (InterruptedException e){
+                e.printStackTrace();
+            } finally {
+                Controlador_Semaforos.semaforo_extractores_4.release();       // Dar la luz verde a los mineros
+            }
         }
     }
 

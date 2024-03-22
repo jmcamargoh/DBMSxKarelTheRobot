@@ -8,6 +8,8 @@ import java.util.concurrent.CountDownLatch;
 public class Extractor extends Robot implements Runnable {
     private static Lock lock = new ReentrantLock();
     private static Lock lock1 = new ReentrantLock();
+    private static Semaphore semaforo1 = new Semaphore(1);
+    private static Semaphore semaforo2 = new Semaphore(0);
     private CountDownLatch extractoresLatch;
     private int identificador;
     private static boolean primerExtractor = true; // Variable para rastrear el primer Extractor
@@ -89,43 +91,50 @@ public class Extractor extends Robot implements Runnable {
     public void extraccion_mina() { // Habrá manera de optimizar la extracción?
         while (contador < 21) {
             if (identificador == 1 && contador < 20) { // Primer Extractor (Dentro de la mina)
-                lock1.lock();
                 try {
+                    Controlador_Semaforos.semaforo_extractores_4.acquire();
+                    semaforo1.acquire();
                     recto(1);
                     cambioSentido();
-                    for (int i = 0; i < 5; i++) { // Recolección en el punto de extracción
+                    for (int i = 0; i < 20; i++){
                         pickBeeper();
                         contador++;
                         System.out.println("Contador = " + contador);
                     }
                     recto();
-                    giroDerecha();
-                    recto(5);
-                    while (anyBeepersInBeeperBag()) { // Entrega al segundo punto de extracción
-                        putBeeper();
+                    } catch (InterruptedException e){
+                        e.printStackTrace();
+                    } finally {
+                        Controlador_Semaforos.semaforo_trenes_4.release();
                     }
-                    cambioSentido(); // Empieza el retorno a la posición inicial
-                    recto(2);
-                } finally {
-                    lock1.unlock();
+                giroDerecha();
+                recto(5);
+                while (anyBeepersInBeeperBag()) { // Entrega al segundo punto de extracción
+                    putBeeper();
                 }
+                cambioSentido(); // Empieza el retorno a la posición inicial
+                recto(2);
+                semaforo2.release();
                 recto();
                 giroIzquierda();
 
             } else if (identificador == 2) { // Segundo Extractor (Para afuera de la mina)
-                lock1.lock();
                 try {
+                    semaforo2.acquire();
                     recto(1);
-                    for (int i = 0; i < 5; i++) { // Recolección en el segundo punto de extracción
+                    for (int i = 0; i < 20; i++) { // Recoleccion en el segundo punto de extracción
                         pickBeeper();
                     }
                     if (filas == 4) {
                         filas = 0; // Empieza en la primera fila de la próxima columna
                         columnas--; // Ya se llenó la columna, que vaya con la siguiente
                     }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 } finally {
-                    lock1.unlock();
+                    semaforo1.release();
                 }
+            
                 cambioSentido();
                 recto();
                 giroDerecha();
@@ -164,6 +173,7 @@ public class Extractor extends Robot implements Runnable {
                 }
             }
         }
+
     }
 
     public void race() {
