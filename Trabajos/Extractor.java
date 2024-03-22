@@ -89,11 +89,10 @@ public class Extractor extends Robot implements Runnable {
     }
 
     public void extraccion_mina() { // Habrá manera de optimizar la extracción?
-        while (contador < 21) {
-            if (identificador == 1 && contador < 20) { // Primer Extractor (Dentro de la mina)
+        while (true) {
+            if (identificador == 1 /*&& contador < 20*/) { // Primer Extractor (Dentro de la mina)
                 try {
                     Controlador_Semaforos.semaforo_extractores_4.acquire();
-                    semaforo1.acquire();
                     recto(1);
                     cambioSentido();
                     for (int i = 0; i < 20; i++){
@@ -102,19 +101,26 @@ public class Extractor extends Robot implements Runnable {
                         System.out.println("Contador = " + contador);
                     }
                     recto();
-                    } catch (InterruptedException e){
-                        e.printStackTrace();
-                    } finally {
+                } catch (InterruptedException e){
+                    e.printStackTrace();
+                } finally {
                         Controlador_Semaforos.semaforo_trenes_4.release();
-                    }
-                giroDerecha();
-                recto(5);
-                while (anyBeepersInBeeperBag()) { // Entrega al segundo punto de extracción
-                    putBeeper();
                 }
-                cambioSentido(); // Empieza el retorno a la posición inicial
-                recto(2);
-                semaforo2.release();
+                giroDerecha();
+                recto(4);
+                try {
+                    semaforo1.acquire();
+                    recto(1);
+                    while (anyBeepersInBeeperBag()) { // Entrega al segundo punto de extracción
+                        putBeeper();
+                    }
+                    cambioSentido(); // Empieza el retorno a la posición inicial
+                    recto(2);
+                } catch (InterruptedException e){
+                    e.printStackTrace();
+                } finally {
+                    semaforo2.release();
+                }   
                 recto();
                 giroIzquierda();
 
@@ -125,6 +131,8 @@ public class Extractor extends Robot implements Runnable {
                     for (int i = 0; i < 20; i++) { // Recoleccion en el segundo punto de extracción
                         pickBeeper();
                     }
+                    cambioSentido();
+                    recto();
                     if (filas == 4) {
                         filas = 0; // Empieza en la primera fila de la próxima columna
                         columnas--; // Ya se llenó la columna, que vaya con la siguiente
@@ -134,9 +142,6 @@ public class Extractor extends Robot implements Runnable {
                 } finally {
                     semaforo1.release();
                 }
-            
-                cambioSentido();
-                recto();
                 giroDerecha();
                 recto();
                 giroIzquierda();

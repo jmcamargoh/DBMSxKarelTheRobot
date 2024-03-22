@@ -107,10 +107,11 @@ public class Tren extends Robot implements Runnable {
             giroDerecha();
             recto();    // Semaforo 3
             giroIzquierda();
-            recto();
-            giroDerecha(); // Semaforo 4
+            recto(4); // Semaforo 4
             try {
                 Controlador_Semaforos.semaforo_trenes_4.acquire();
+                recto();
+                giroDerecha(); 
                 recto(1);
                 while(anyBeepersInBeeperBag()){
                     putBeeper();
