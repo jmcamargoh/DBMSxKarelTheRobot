@@ -31,11 +31,12 @@ public class Mina implements Directions {
             }
         }
 
-        if (numMineros < 2)
+        if (numMineros != 2)
             numMineros = 2;
-        if (numTrenes < 2)
+
+        if (numTrenes > 2)
             numTrenes = 2;
-        if (numExtractores < 2)
+        if (numExtractores != 2)
             numExtractores = 2;
 
         CountDownLatch minerosLatch = new CountDownLatch(numMineros);
@@ -48,28 +49,28 @@ public class Mina implements Directions {
 
         // Crea los objetos especificados
         for (int i = 0; i < numMineros; i++) {
-            Minero minero = new Minero(12+(i*2), 1, South, 0, negro, minerosLatch);
+            Minero minero = new Minero(12 + (i * 2), 1, South, 0, negro, minerosLatch);
             Thread mineroThread = new Thread(minero);
             mineros[i] = mineroThread;
             System.out.println("Se creó un objeto Minero");
         }
 
         for (int i = 0; i < numTrenes; i++) {
-            Tren tren = new Tren(12+(i*2), 2, South, 0, azul, trenesLatch);
+            Tren tren = new Tren(12 + (i * 2), 2, South, 0, azul, trenesLatch);
             Thread trenThread = new Thread(tren);
             trenes[i] = trenThread;
             System.out.println("Se creó un objeto Tren");
         }
 
         for (int i = 0; i < numExtractores; i++) {
-            Extractor extractor = new Extractor(12+(i*2), 3, South, 0, rojo, extractoresLatch, i+1);
+            Extractor extractor = new Extractor(12 + (i * 2), 3, South, 0, rojo, extractoresLatch, i + 1);
             Thread extractorThread = new Thread(extractor);
             extractores[i] = extractorThread;
             System.out.println("Se creó un objeto Extractor");
         }
 
         // Iniciar los hilos
-        for (Thread hilo:mineros){
+        for (Thread hilo : mineros) {
             hilo.start();
         }
 
@@ -80,7 +81,7 @@ public class Mina implements Directions {
             e.printStackTrace();
         }
 
-        for (Thread hilo:trenes){
+        for (Thread hilo : trenes) {
             hilo.start();
         }
 
@@ -90,7 +91,7 @@ public class Mina implements Directions {
             e.printStackTrace();
         }
 
-        for (Thread hilo:extractores){
+        for (Thread hilo : extractores) {
             hilo.start();
         }
     }

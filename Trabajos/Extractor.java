@@ -10,11 +10,11 @@ public class Extractor extends Robot implements Runnable {
     private static Lock lock1 = new ReentrantLock();
     private CountDownLatch extractoresLatch;
     private int identificador;
-    private static boolean primerMinero = true; // Variable para rastrear el primer Extractor
+    private static boolean primerExtractor = true; // Variable para rastrear el primer Extractor
     private boolean primerExtractorCompleto = false;
     private static int contador = 0; // Cuantos beepers se han dejado en el punto de extraccion
-    private static int filas = 0;   // Fila en donde almacena       
-    private static int columnas = 3;    // Columna en donde almacena
+    private static int filas = 0; // Fila en donde almacena
+    private static int columnas = 3; // Columna en donde almacena
 
     public Extractor(int Street, int Avenue, Direction direction, int beepers, Color color,
             CountDownLatch extractoresLatch, int identificador) {
@@ -64,24 +64,24 @@ public class Extractor extends Robot implements Runnable {
         try {
             // Cambiate esto
             giroDerecha();
-            move();
+            recto(1);
             giroIzquierda();
             recto();
         } finally {
             lock1.unlock();
         }
         giroDerecha();
-        move();
+        recto(1);
         extractoresLatch.countDown();
         giroIzquierda();
         lock.lock();
         try {
-            if (primerMinero) {
-                recto(); // Primer minero va al fondo
+            if (primerExtractor) {
+                recto(); // Primer extractor va al fondo
                 giroIzquierda();
             } // El segundo se queda quieto en la posicion indicada previa al lock
         } finally {
-            primerMinero = false; // Marcamos que el primer minero ya ha pasado
+            primerExtractor = false; // Marcamos que el primer extractor ya ha pasado
             lock.unlock();
         }
     }
@@ -93,7 +93,7 @@ public class Extractor extends Robot implements Runnable {
                 try {
                     recto(1);
                     cambioSentido();
-                    for (int i = 0; i < 5; i++) {   // Recolección en el punto de extracción
+                    for (int i = 0; i < 5; i++) { // Recolección en el punto de extracción
                         pickBeeper();
                         contador++;
                         System.out.println("Contador = " + contador);
@@ -101,10 +101,10 @@ public class Extractor extends Robot implements Runnable {
                     recto();
                     giroDerecha();
                     recto(5);
-                    while (anyBeepersInBeeperBag()) {   // Entrega al segundo punto de extracción
+                    while (anyBeepersInBeeperBag()) { // Entrega al segundo punto de extracción
                         putBeeper();
                     }
-                    cambioSentido();    // Empieza el retorno a la posición inicial
+                    cambioSentido(); // Empieza el retorno a la posición inicial
                     recto(2);
                 } finally {
                     lock1.unlock();
@@ -116,11 +116,11 @@ public class Extractor extends Robot implements Runnable {
                 lock1.lock();
                 try {
                     recto(1);
-                    for (int i = 0; i < 5; i++){    // Recolección en el segundo punto de extracción
+                    for (int i = 0; i < 5; i++) { // Recolección en el segundo punto de extracción
                         pickBeeper();
                     }
                     if (filas == 4) {
-                        filas = 0;  // Empieza en la primera fila de la próxima columna
+                        filas = 0; // Empieza en la primera fila de la próxima columna
                         columnas--; // Ya se llenó la columna, que vaya con la siguiente
                     }
                 } finally {
@@ -142,7 +142,7 @@ public class Extractor extends Robot implements Runnable {
                 recto(filas);
                 lock1.lock();
                 try {
-                    while (anyBeepersInBeeperBag()) {   // Entrega en el silo vacío del almacén
+                    while (anyBeepersInBeeperBag()) { // Entrega en el silo vacío del almacén
                         putBeeper();
                     }
                     cambioSentido();
@@ -158,10 +158,10 @@ public class Extractor extends Robot implements Runnable {
                     giroDerecha();
                     recto();
                     giroIzquierda();
-                    filas++;    // Indica que esa fila ya se llenó para que siga a la próxima
-            } finally {
-                lock1.unlock();
-            }
+                    filas++; // Indica que esa fila ya se llenó para que siga a la próxima
+                } finally {
+                    lock1.unlock();
+                }
             }
         }
     }

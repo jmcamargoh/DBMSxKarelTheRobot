@@ -64,27 +64,46 @@ public class Tren extends Robot implements Runnable {
         giroIzquierda();
         recto();
         giroIzquierda();
-        lock.lock();
-        try {
-            if (primerTren) {
-                recto(); // Primer minero va al fondo
-                // lock.unlock();
-            } else if (segundoTren) {
-                recto(5); // Segundo minero va una posición menos
-                // lock.unlock();
-            } else {
-                recto(3);
-            }
-        } finally {
-            primerTren = false; // Marcamos que el primer minero ya ha pasado
-            segundoTren = false;
-            lock.unlock();
+        recto(2);
+        // lock.lock();
+        // try {
+        // if (primerTren) {
+        // recto(); // Primer minero va al fondo
+        // // lock.unlock();
+        // } else if (segundoTren) {
+        // recto(5); // Segundo minero va una posición menos
+        // // lock.unlock();
+        // } else {
+        // recto(3);
+        // }
+        // } finally {
+        // primerTren = false; // Marcamos que el primer minero ya ha pasado
+        // segundoTren = false;
+        // lock.unlock();
+        // }
+    }
+
+    public void ciclo() {
+        while (true) {
+            recto(5);
+            giroIzquierda();
+            recto();
+            giroDerecha();
+            recto(5);
+            giroDerecha(); // punto de recolección
+            recto();
+            giroDerecha();
+            recto();
+            giroIzquierda();
+            recto(5);
+            giroIzquierda(); // punto de entrega
         }
     }
 
     public void race() {
         // Las acciones del tren
         entrada();
+        ciclo();
     }
 
     @Override
