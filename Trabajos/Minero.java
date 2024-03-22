@@ -112,7 +112,7 @@ public class Minero extends Robot implements Runnable {
                             }
                             cambioSentido();
                             System.out.println("Menas Acabadas: "+menas_acabadas);
-                            recto(menas_acabadas + 1);   // Se ubica en el punto de entrega para dejar los beepers
+                            recto(menas_acabadas);   // Se ubica en el punto de entrega para dejar los beepers
                             primerMinero = true;
                         } else {        // Cuando ya hizo la primera iteracion, se comporta igual que el otro minero
                             recto(1);
@@ -125,10 +125,11 @@ public class Minero extends Robot implements Runnable {
                             }
                             cambioSentido();
                             System.out.println("Menas Acabadas: "+menas_acabadas);
-                            recto(menas_acabadas + 1);  // Se ubica en el punto de entrega para dejar los beepers
+                            recto(menas_acabadas);  // Se ubica en el punto de entrega para dejar los beepers
                         }
                         try {
                             Controlador_Semaforos.semaforo_mineros_2.acquire();   // Solicita el semaforo que tiene con los trenes
+                            recto(1);
                             for (int i = 0; i < 20; i++) {      // Coloca los beepers en el punto de recoleccion
                                 putBeeper();
                             }
@@ -137,6 +138,7 @@ public class Minero extends Robot implements Runnable {
                         } catch (InterruptedException e){
                             e.printStackTrace();
                         } finally {
+                            // Aqui hay que poner una condicion para que hayan 120 beepers y el tren pueda recogerlos
                             Controlador_Semaforos.semaforo_trenes_2.release();    // Libera el semaforo para que el tren pueda actuar
                         }
                     } finally {
@@ -159,9 +161,10 @@ public class Minero extends Robot implements Runnable {
                         }
                         cambioSentido();
                         System.out.println("Menas Acabadas: "+menas_acabadas);
-                        recto(menas_acabadas + 1);  // Se ubica en el punto de entrega para dejar los beepers
+                        recto(menas_acabadas);  // Se ubica en el punto de entrega para dejar los beepers
                         try {
                             Controlador_Semaforos.semaforo_mineros_2.acquire();   // Solicita el semaforo que tiene con los trenes
+                            recto(1);
                             for (int i = 0; i < 20; i++) {      // Coloca los beepers en el punto de recoleccion
                                 putBeeper();
                             }

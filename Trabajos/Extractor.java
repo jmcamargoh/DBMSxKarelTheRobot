@@ -16,7 +16,7 @@ public class Extractor extends Robot implements Runnable {
     private boolean primerExtractorCompleto = false;
     private static int contador = 0; // Cuantos beepers se han dejado en el punto de extraccion
     private static int filas = 0; // Fila en donde almacena
-    private static int columnas = 3; // Columna en donde almacena
+    private static int columnas = 5; // Columna en donde almacena
 
     public Extractor(int Street, int Avenue, Direction direction, int beepers, Color color,
             CountDownLatch extractoresLatch, int identificador) {
@@ -90,15 +90,13 @@ public class Extractor extends Robot implements Runnable {
 
     public void extraccion_mina() { // Habrá manera de optimizar la extracción?
         while (true) {
-            if (identificador == 1 /*&& contador < 20*/) { // Primer Extractor (Dentro de la mina)
+            if (identificador == 1) { // Primer Extractor (Dentro de la mina)
                 try {
                     Controlador_Semaforos.semaforo_extractores_4.acquire();
                     recto(1);
                     cambioSentido();
-                    for (int i = 0; i < 20; i++){
+                    for (int i = 0; i < 20; i++){   // Capacidad de 50 beepers de los extractores
                         pickBeeper();
-                        contador++;
-                        System.out.println("Contador = " + contador);
                     }
                     recto();
                 } catch (InterruptedException e){
@@ -129,14 +127,18 @@ public class Extractor extends Robot implements Runnable {
                     semaforo2.acquire();
                     recto(1);
                     for (int i = 0; i < 20; i++) { // Recoleccion en el segundo punto de extracción
-                        pickBeeper();
+                        pickBeeper();              // Capacidad de 50 beepers de los extractores
                     }
                     cambioSentido();
                     recto();
-                    if (filas == 4) {
+                    if (contador >= 40){  // Si un almacen se llena
+                        columnas--;
+                        contador = 0;
+                    }
+                    /*if (filas == 4) {
                         filas = 0; // Empieza en la primera fila de la próxima columna
                         columnas--; // Ya se llenó la columna, que vaya con la siguiente
-                    }
+                    }*/
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
@@ -147,32 +149,29 @@ public class Extractor extends Robot implements Runnable {
                 giroIzquierda();
                 recto(1);
                 giroDerecha();
-                recto(1);
+                recto(columnas);
                 giroDerecha();
                 recto();
-                giroIzquierda();
+                cambioSentido();
+                /*giroIzquierda();
                 recto(columnas);
                 giroIzquierda();
-                recto(filas);
+                recto(filas);*/
                 lock1.lock();
                 try {
                     while (anyBeepersInBeeperBag()) { // Entrega en el silo vacío del almacén
                         putBeeper();
+                        contador++;
+                        System.out.println("Contador = " + contador);
                     }
-                    cambioSentido();
-                    recto(filas);
-                    giroDerecha();
+                    recto(1);
+                    giroIzquierda();
                     recto(columnas);
-                    giroDerecha();
-                    recto(1);
-                    giroIzquierda();
-                    recto(1);
                     giroIzquierda();
                     recto();
                     giroDerecha();
                     recto();
                     giroIzquierda();
-                    filas++; // Indica que esa fila ya se llenó para que siga a la próxima
                 } finally {
                     lock1.unlock();
                 }
