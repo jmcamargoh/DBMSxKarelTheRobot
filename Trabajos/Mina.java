@@ -45,6 +45,9 @@ public class Mina implements Directions {
         CountDownLatch trenesLatch = new CountDownLatch(numTrenes);
         CountDownLatch extractoresLatch = new CountDownLatch(numExtractores);
 
+        // Creamos el controlador de trenes
+        Controlador_Trenes controladorTrenes = new Controlador_Trenes();
+
         Thread mineros[] = new Thread[numMineros];
         Thread trenes[] = new Thread[numTrenes];
         Thread extractores[] = new Thread[numExtractores];
@@ -59,13 +62,15 @@ public class Mina implements Directions {
 
         for (int i = 0; i < numTrenes; i++) {
             Tren tren = new Tren(12 + (i * 2), 2, South, 0, azul, trenesLatch);
+            controladorTrenes.agregarTren(tren); // Agregamos cada tren al controlador de trenes
             Thread trenThread = new Thread(tren);
             trenes[i] = trenThread;
             System.out.println("Se creó un objeto Tren");
         }
 
         for (int i = 0; i < numExtractores; i++) {
-            Extractor extractor = new Extractor(12 + (i * 2), 3, South, 0, rojo, extractoresLatch, i + 1);
+            Extractor extractor = new Extractor(12 + (i * 2), 3, South, 0, rojo, extractoresLatch, i + 1,
+                    controladorTrenes);
             Thread extractorThread = new Thread(extractor);
             extractores[i] = extractorThread;
             System.out.println("Se creó un objeto Extractor");

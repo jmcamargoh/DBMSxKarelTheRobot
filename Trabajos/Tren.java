@@ -9,6 +9,7 @@ public class Tren extends Robot implements Runnable {
     private CountDownLatch trenesLatch;
     private static boolean primerTren = true; // Variable para rastrear el primer Tren
     private static boolean segundoTren = true;
+    private boolean salida = true; // variable para marcar cuando romper el ciclo
     private int beepersRecolectados = 0; // Numero de beepers recolectados por un robot
 
     public Tren(int Street, int Avenue, Direction direction, int beepers, Color color, CountDownLatch trenesLatch) {
@@ -52,6 +53,10 @@ public class Tren extends Robot implements Runnable {
         }
     }
 
+    public void setSalida(boolean valor) { // cambiar valor de salida
+        this.salida = valor;
+    }
+
     public void entrada() {
         lock.lock();
         try {
@@ -85,7 +90,8 @@ public class Tren extends Robot implements Runnable {
     }
 
     public void ciclo() {
-        while (true) {
+        while (salida) { // cuando su varibale pasa a false desde el controladorTrenes se marca la salida
+                         // de cada tren del ciclo
             recto();
             giroIzquierda();
             recto(4); // Semaforo 1 vertical
@@ -155,10 +161,22 @@ public class Tren extends Robot implements Runnable {
         }
     }
 
+    public void salida() {
+        // turnOff(); // solo matarlos para pruebas
+        recto(1);
+        giroDerecha();
+        recto();
+        giroDerecha();
+        recto();
+        giroIzquierda();
+        recto(5);
+    }
+
     public void race() {
         // Las acciones del tren
         entrada();
         ciclo();
+        salida();
     }
 
     @Override

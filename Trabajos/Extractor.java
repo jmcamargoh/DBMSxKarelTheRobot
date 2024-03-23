@@ -21,11 +21,14 @@ public class Extractor extends Robot implements Runnable {
     private static int beepers1 = 0; // Cuantos beepers ha recogido el numero 1 (para detener la extraccion)
     private static int beepers2 = 0; // Cuantos beepers ha recogido el numero 2 (para detener la extraccion)
 
+    private Controlador_Trenes controladorTrenes; // Declaración de la variable
+
     public Extractor(int Street, int Avenue, Direction direction, int beepers, Color color,
-            CountDownLatch extractoresLatch, int identificador) {
+            CountDownLatch extractoresLatch, int identificador, Controlador_Trenes controladorTrenes) {
         super(Street, Avenue, direction, beepers, color);
         this.extractoresLatch = extractoresLatch;
         this.identificador = identificador;
+        this.controladorTrenes = controladorTrenes; // Almacenar la instancia de Controlador_Trenes
         World.setupThread(this);
     }
 
@@ -219,6 +222,10 @@ public class Extractor extends Robot implements Runnable {
             giroDerecha();
             recto(5);
             turnOff();
+
+            // dar salida a Trenes desues de que salen los extractores
+            controladorTrenes.darSalidaTrenes(); // Llamada al método de Controlador_Trenes sin argumentos
+
         }
     }
 
