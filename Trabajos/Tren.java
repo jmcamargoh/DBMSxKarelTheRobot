@@ -9,7 +9,7 @@ public class Tren extends Robot implements Runnable {
     private CountDownLatch trenesLatch;
     private static boolean primerTren = true; // Variable para rastrear el primer Tren
     private static boolean segundoTren = true;
-    private int beepersRecolectados = 0;    // Numero de beepers recolectados por un robot
+    private int beepersRecolectados = 0; // Numero de beepers recolectados por un robot
 
     public Tren(int Street, int Avenue, Direction direction, int beepers, Color color, CountDownLatch trenesLatch) {
         super(Street, Avenue, direction, beepers, color);
@@ -88,43 +88,69 @@ public class Tren extends Robot implements Runnable {
         while (true) {
             recto();
             giroIzquierda();
-            recto();    // Semaforo 1
-            giroDerecha();
-            recto(4); // Semaforo 2
+            recto(4); // Semaforo 1 vertical
             try {
-                Controlador_Semaforos.semaforo_trenes_2.acquire();    // Conseguir la luz verde del semaforo
-                recto(1);   // punto de recoleccion
-                for (int i = 0; i < 50; i++){   // Cuantos beepers recoge, se hace asi por la eficiencia for > while
-                    pickBeeper();
-                    //beepersRecolectados++;
-                }
-                giroDerecha();
-                recto(2);
-            } catch (InterruptedException e){
+                // if (Controlador_Semaforos.permitirPasarVerticalSector1()) {
+                // Controlador_Semaforos.semaforo_trenes_vertical_1.acquire();
+                // recto(2); // Avanzar
+                // }
+                Controlador_Semaforos.semaforo_trenes_vertical_1.acquire();
+                recto(2); // Avanzar
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                Controlador_Semaforos.semaforo_mineros_2.release();       // Dar la luz verde a los mineros
+                Controlador_Semaforos.semaforo_trenes_horizontal_3.release();
             }
             recto();
             giroDerecha();
-            recto();    // Semaforo 3
+            recto(4); // Semaforo 2
+            try {
+                Controlador_Semaforos.semaforo_trenes_2.acquire(); // Conseguir la luz verde del semaforo
+                recto(1); // punto de recoleccion
+                for (int i = 0; i < 50; i++) { // Cuantos beepers recoge, se hace asi por la eficiencia for > while
+                    pickBeeper();
+                    // beepersRecolectados++;
+                }
+                giroDerecha();
+                recto(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                Controlador_Semaforos.semaforo_mineros_2.release(); // Dar la luz verde a los mineros
+            }
+            recto();
+            giroDerecha();
+            recto(4); // Semaforo 3
+            try {
+                // if (Controlador_Semaforos.permitirPasarHorizontalSector3()) {
+                // Controlador_Semaforos.semaforo_trenes_horizontal_3.acquire();
+                // recto(2); // AvanzarF
+                // }
+                Controlador_Semaforos.semaforo_trenes_horizontal_3.acquire();
+                recto(2); // AvanzarF
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                Controlador_Semaforos.semaforo_trenes_vertical_1.release();
+            }
+            recto();
             giroIzquierda();
             recto(4); // Semaforo 4
             try {
                 Controlador_Semaforos.semaforo_trenes_4.acquire();
                 recto();
-                giroDerecha(); 
+                giroDerecha();
                 recto(1);
-                while(anyBeepersInBeeperBag()){     // Entregar todos los beepers que carga en el punto de recoleccion
+                while (anyBeepersInBeeperBag()) { // Entregar todos los beepers que carga en el punto de recoleccion
                     putBeeper();
-                    //beepersRecolectados--;
+                    // beepersRecolectados--;
                 }
                 cambioSentido();
                 recto(1);
-            } catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                Controlador_Semaforos.semaforo_extractores_4.release();       // Dar la luz verde a los mineros
+                Controlador_Semaforos.semaforo_extractores_4.release(); // Dar la luz verde a los mineros
             }
         }
     }

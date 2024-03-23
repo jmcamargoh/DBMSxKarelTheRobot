@@ -34,8 +34,10 @@ public class Mina implements Directions {
         if (numMineros != 2)
             numMineros = 2;
 
-        if (numTrenes > 2)
+        if (numTrenes != 2)
             numTrenes = 2;
+        // if (numTrenes > 6)
+        // numTrenes = 6;
         if (numExtractores != 2)
             numExtractores = 2;
 
