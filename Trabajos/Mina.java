@@ -9,7 +9,7 @@ public class Mina implements Directions {
         Color verde = new Color(0, 255, 0);
         World.setWorldColor(verde);
         World.setVisible(true);
-        World.setDelay(30);
+        World.setDelay(20);
         World.showSpeedControl(true);
 
         int numMineros = 0;

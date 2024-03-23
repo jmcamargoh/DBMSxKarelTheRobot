@@ -9,6 +9,7 @@ public class Tren extends Robot implements Runnable {
     private CountDownLatch trenesLatch;
     private static boolean primerTren = true; // Variable para rastrear el primer Tren
     private static boolean segundoTren = true;
+    private int beepersRecolectados = 0;    // Numero de beepers recolectados por un robot
 
     public Tren(int Street, int Avenue, Direction direction, int beepers, Color color, CountDownLatch trenesLatch) {
         super(Street, Avenue, direction, beepers, color);
@@ -93,8 +94,9 @@ public class Tren extends Robot implements Runnable {
             try {
                 Controlador_Semaforos.semaforo_trenes_2.acquire();    // Conseguir la luz verde del semaforo
                 recto(1);   // punto de recoleccion
-                for (int i = 0; i < 20; i++){
+                for (int i = 0; i < 50; i++){   // Cuantos beepers recoge, se hace asi por la eficiencia for > while
                     pickBeeper();
+                    //beepersRecolectados++;
                 }
                 giroDerecha();
                 recto(2);
@@ -113,8 +115,9 @@ public class Tren extends Robot implements Runnable {
                 recto();
                 giroDerecha(); 
                 recto(1);
-                while(anyBeepersInBeeperBag()){
+                while(anyBeepersInBeeperBag()){     // Entregar todos los beepers que carga en el punto de recoleccion
                     putBeeper();
+                    //beepersRecolectados--;
                 }
                 cambioSentido();
                 recto(1);

@@ -15,7 +15,6 @@ public class Extractor extends Robot implements Runnable {
     private static boolean primerExtractor = true; // Variable para rastrear el primer Extractor
     private boolean primerExtractorCompleto = false;
     private static int contador = 0; // Cuantos beepers se han dejado en el punto de extraccion
-    private static int filas = 0; // Fila en donde almacena
     private static int columnas = 5; // Columna en donde almacena
 
     public Extractor(int Street, int Avenue, Direction direction, int beepers, Color color,
@@ -95,7 +94,7 @@ public class Extractor extends Robot implements Runnable {
                     Controlador_Semaforos.semaforo_extractores_4.acquire();
                     recto(1);
                     cambioSentido();
-                    for (int i = 0; i < 20; i++){   // Capacidad de 50 beepers de los extractores
+                    for (int i = 0; i < 50; i++){   // Capacidad de 50 beepers de los extractores
                         pickBeeper();
                     }
                     recto();
@@ -126,19 +125,15 @@ public class Extractor extends Robot implements Runnable {
                 try {
                     semaforo2.acquire();
                     recto(1);
-                    for (int i = 0; i < 20; i++) { // Recoleccion en el segundo punto de extracción
+                    for (int i = 0; i < 50; i++) { // Recoleccion en el segundo punto de extracción
                         pickBeeper();              // Capacidad de 50 beepers de los extractores
                     }
                     cambioSentido();
                     recto();
-                    if (contador >= 40){  // Si un almacen se llena
+                    if (contador >= 3000){  // Si un almacen se llena
                         columnas--;
                         contador = 0;
                     }
-                    /*if (filas == 4) {
-                        filas = 0; // Empieza en la primera fila de la próxima columna
-                        columnas--; // Ya se llenó la columna, que vaya con la siguiente
-                    }*/
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
@@ -153,10 +148,6 @@ public class Extractor extends Robot implements Runnable {
                 giroDerecha();
                 recto();
                 cambioSentido();
-                /*giroIzquierda();
-                recto(columnas);
-                giroIzquierda();
-                recto(filas);*/
                 lock1.lock();
                 try {
                     while (anyBeepersInBeeperBag()) { // Entrega en el silo vacío del almacén

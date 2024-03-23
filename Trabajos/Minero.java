@@ -98,14 +98,14 @@ public class Minero extends Robot implements Runnable {
     }
 
     public void minar() {   // Perdon por este codigo, pero es lo que nos funciono :(
-        while (contador <= 40){     // Se pone la cantidad de menas que hay en cada silo (2000 en el ejercicio)
+        while (contador <= 2000){     // Se pone la cantidad de menas que hay en cada silo (2000 en el ejercicio)
             silo = menas_acabadas+1;
-            if (contador < 40){
+            if (contador < 2000){
                 if (identificador == 1){        // Para el minero 1
                     lock1.lock();
                     try {
                         if (primerMinero == false){     // Cuando llega, se ubica en la mena, entonces no tiene que hacer el recorrido de acomodacion
-                            for (int i = 0; i < 20; i++) {  // Recoge su maxima capacidad (50 en el ejercicio)
+                            for (int i = 0; i < 50; i++) {  // Recoge su maxima capacidad (50 en el ejercicio)
                                 pickBeeper();
                                 contador++;
                                 System.out.println("Beepers Extraidos: "+contador+" - Silo: "+silo);
@@ -118,7 +118,7 @@ public class Minero extends Robot implements Runnable {
                             recto(1);
                             giroDerecha();
                             recto(menas_acabadas);  // Se posiciona en la mena actual a la que deben ir
-                            for (int i = 0; i < 20; i++) {  // Recoge su maxima capacidad (50 en el ejercicio)
+                            for (int i = 0; i < 50; i++) {  // Recoge su maxima capacidad (50 en el ejercicio)
                                 pickBeeper();
                                 contador++; // La cantidad de beepers que han sido extraidos aumenta (para saber cuando debe cambiar de silo)
                                 System.out.println("Beepers Extraidos: "+contador+" - Silo: "+silo);
@@ -130,7 +130,7 @@ public class Minero extends Robot implements Runnable {
                         try {
                             Controlador_Semaforos.semaforo_mineros_2.acquire();   // Solicita el semaforo que tiene con los trenes
                             recto(1);
-                            for (int i = 0; i < 20; i++) {      // Coloca los beepers en el punto de recoleccion
+                            for (int i = 0; i < 50; i++) {      // Coloca los beepers en el punto de recoleccion
                                 putBeeper();
                             }
                             giroIzquierda();
@@ -154,7 +154,7 @@ public class Minero extends Robot implements Runnable {
                         recto(1);
                         giroDerecha();
                         recto(menas_acabadas);  // Se posiciona en la mena actual a la que deben ir
-                        for (int i = 0; i < 20; i++) {  // Recoge su maxima capacidad (50 en el ejercicio)
+                        for (int i = 0; i < 50; i++) {  // Recoge su maxima capacidad (50 en el ejercicio)
                             pickBeeper();
                             contador++; // La cantidad de beepers que han sido extraidos aumenta (para saber cuando debe cambiar de silo)
                             System.out.println("Beepers Extraidos: "+contador+" - Silo: "+silo);
@@ -165,7 +165,7 @@ public class Minero extends Robot implements Runnable {
                         try {
                             Controlador_Semaforos.semaforo_mineros_2.acquire();   // Solicita el semaforo que tiene con los trenes
                             recto(1);
-                            for (int i = 0; i < 20; i++) {      // Coloca los beepers en el punto de recoleccion
+                            for (int i = 0; i < 50; i++) {      // Coloca los beepers en el punto de recoleccion
                                 putBeeper();
                             }
                             giroIzquierda();
