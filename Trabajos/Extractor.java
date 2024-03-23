@@ -182,7 +182,7 @@ public class Extractor extends Robot implements Runnable {
         }
     }
 
-    public void salida() {      // Metodo para sacar a los robots
+    public void salida() { // Metodo para sacar a los robots
         if (identificador == 2) { // Debe salir de primero el ultimo
             try {
                 semaforo3.acquire();
