@@ -33,6 +33,8 @@ public class Tabla {
                     columnas.add("idRobot");
                     columnas.add("tipoRobot");
                     columnas.add("encendido");
+                    columnas.add("color");
+                    columnas.add("direccion");
 
                 } else if (nombre.equals("LogEventos")) {
                     columnas.add("idLogEventos");
