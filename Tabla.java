@@ -1,6 +1,7 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -12,12 +13,47 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Tabla {
     private ArrayList<String> columnas;
     private ArrayList<String> filas;    // Hay que ver como adaptar esto al codigo, aun es manual la insercion
+    private Map<String, Map<String, List<String[]>>> indices;     // Index para columnas especificas (clave=nombreColumna, valor=indiceColumna)
     private static final Lock lock = new ReentrantLock();
 
     // Constructor
     public Tabla() {
         this.columnas = new ArrayList<>();
         this.filas = new ArrayList<>();
+        this.indices = new HashMap<>();
+    }
+    //-------------------------------------------------------------------------------------------------------------
+
+    // Método para indexar una columna específica (se hace asi para poder aplicarlo a las consultas)
+    public void indexarColumna(String nombreColumna, String ruta) {
+        Map<String, List<String[]>> indiceColumna = new HashMap<>();    // Index de valores en la columna (clave=valoresenColumna, valor=fila completa en la que coincide ese valor)
+        try (BufferedReader reader = new BufferedReader(new FileReader(ruta))) {
+            String linea;
+            // Leer la primera línea para obtener los nombres de las columnas
+            String[] nombresColumnas = reader.readLine().split(",");
+            int indiceColumnaActual = -1;
+            for (int i = 0; i < nombresColumnas.length; i++) {
+                if (nombresColumnas[i].equals(nombreColumna)) {
+                    indiceColumnaActual = i;
+                    break;
+                }
+            }
+            if (indiceColumnaActual == -1) {
+                System.out.println("La columna ingresada no existe en la tabla");
+                return;
+            }
+            // Leer cada línea del archivo y construir el índice
+            while ((linea = reader.readLine()) != null) {
+                String[] partes = linea.split(",");
+                String valor = partes[indiceColumnaActual];
+                List<String[]> registros = indiceColumna.getOrDefault(valor, new ArrayList<>());
+                registros.add(partes);
+                indiceColumna.put(valor, registros);
+            }
+            indices.put(nombreColumna, indiceColumna);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     //-------------------------------------------------------------------------------------------------------------
 
@@ -75,19 +111,22 @@ public class Tabla {
     }
     //-------------------------------------------------------------------------------------------------------------
 
-    // Insertar una fila en la tabla (se debe modificar)
+    // Insertar una fila en la tabla (se debe modificar) (se podria eliminar la ruta y poner una ruta por default)
     public void agregarFilaCSV(String nombre, String ruta){
         try {
-            FileWriter fileWriter = new FileWriter(ruta + "/" + nombre + ".csv", true);
+            String route = ruta + "/" + nombre + ".csv";    // Temporalmente se hara asi
+            FileWriter fileWriter = new FileWriter(route, true);
             BufferedWriter writer = new BufferedWriter(fileWriter);
 
             // Agregar la nueva fila al final del archivo *(ejemplo para tabla Robot)
-            String nuevaFila = "1,2,true,"; // Reemplaza con los valores que se desean agregar
+            String nuevaFila = "1,1,true,"; // Reemplaza con los valores que se desean agregar
             writer.write(nuevaFila);
             writer.newLine(); // Agrega una nueva línea después de la fila
 
             // Cerrar el escritor
             writer.close();
+
+            indexarColumna("id"+nombre, route); // Para poder indexarlas cuando se inserta un dato, guiandose del id de cada una
 
             System.out.println("Se agregó una nueva fila al archivo CSV.");
         } catch (IOException e) {
@@ -102,7 +141,7 @@ public class Tabla {
             BufferedReader reader = new BufferedReader(new FileReader(ruta));
             String linea;
 
-            System.out.println("");
+            System.out.println();
             System.out.println("Resultado: ");
 
             // Leer cada línea del archivo y mostrarla en la consola
@@ -117,53 +156,31 @@ public class Tabla {
     //-------------------------------------------------------------------------------------------------------------
 
     // Consultas por valor de columna
-    public void consultar(String ruta, String nombreColumna, String valorBuscado){
-        List<String[]> resultados = new ArrayList<>();
-        List<String> columnas = null;
-        int indiceColumna = -1;
-        
-        try{
-            BufferedReader reader = new BufferedReader(new FileReader(ruta));
-            String linea;
-
-            // Leer la primera fila para obtener los nombres de las columnas
-            if ((linea = reader.readLine()) != null) {
-                columnas = Arrays.asList(linea.split(","));
-                indiceColumna = columnas.indexOf(nombreColumna);
-            }
-
-            // Si el nombre de la columna existe en esa tabla
-            if (indiceColumna != -1){
-                // Leer cada fila del archivo
-                while ((linea = reader.readLine()) != null) {
-                    // Dividir la fila en sus partes usando la coma como delimitador
-                    String[] partes = linea.split(",");
-
-                    // Si la fila corresponde con el valor buscado
-                    if (partes.length > indiceColumna && partes[indiceColumna].equals(valorBuscado)) {
-                        resultados.add(partes);
-                    }
-                }
-            } else {
-                System.out.println("La columna ingresada no existe en la tabla");
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void consultar(String ruta, String nombreColumna, String valorBuscado) {
+        indexarColumna(nombreColumna, ruta);    // Mejorar la eficiencia con indexacion de hashmaps
+        long startTime = System.nanoTime();     // Medir los tiempos de ejecucion
+        if (!indices.containsKey(nombreColumna)) {      // Verificar la existencia de la columna
+            System.out.println("No existe un índice para la columna especificada.");
+            return;
         }
-        
-        // Imprimir resultados
-        if (!resultados.isEmpty()) {
-            System.out.println("Resultados Encontrados para la columna '" + nombreColumna + "' con valor de '" + valorBuscado + "':");
-            for (String[] fila : resultados) {
-                for (String dato : fila) {
-                    System.out.print(dato + ",");
-                }
-                System.out.println();
-            }
-        } else {
-            System.out.println("No se encontraron resultados");
+        Map<String, List<String[]>> indiceColumna = indices.get(nombreColumna);     // Index de valores en la columna (clave=valoresenColumna, valor=fila completa en la que coincide ese valor)
+        if (!indiceColumna.containsKey(valorBuscado)) {     // Verificar la existencia del valor
+            System.out.println("No se encontraron resultados para el valor buscado en el índice.");
+            return;
         }
+        List<String[]> resultados = indiceColumna.get(valorBuscado);    // Lista que almacena las filas completas para imprimirlas (despues de la busqueda)
+        System.out.println("Resultados encontrados para la columna '" + nombreColumna + "' con valor '" + valorBuscado + "':");
+        for (String[] fila : resultados) {
+            for (String dato : fila) {
+                System.out.print(dato + ",");
+            }
+            System.out.println();
+        }
+        // Medir los tiempos de ejecucion
+        long endTime = System.nanoTime();
+        double time = (double) ((endTime-startTime)/1e6);
+        System.out.println();
+        System.out.println("Tiempo de Consulta = " + time + " milisegundos");
     }
     //-------------------------------------------------------------------------------------------------------------
 }
