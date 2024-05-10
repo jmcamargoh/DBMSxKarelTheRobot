@@ -2,6 +2,7 @@ import java.util.Scanner;
 import java.io.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.*;
 
 public class Main {
     // Main
@@ -10,7 +11,7 @@ public class Main {
 
         // Primera interaccion con el usuario
         System.out.println("Bienvenido al DBMS para KarelTheRobot!");
-        System.out.println("");
+        System.out.println();
         bienvenida(scan);
     }
     //-------------------------------------------------------------------------------------------------------------
@@ -25,9 +26,9 @@ public class Main {
         System.out.println("Presione 3 para agregar una fila a una de las tablas");
         System.out.println("Presione 4 para ver el contenido de una de las tablas");
         System.out.println("Presione 5 para hacer consultas");
-        System.out.print("Selecione: ");
+        System.out.print("Seleccione: ");
         String decision = scan.nextLine();
-        System.out.println("");
+        System.out.println();
 
         if (decision.equals("1")) {     // Crear nueva BD con sus Tablas
             // Crear una BD como un folder
@@ -45,7 +46,7 @@ public class Main {
             } else {
                 System.out.println("La Base de Datos '" + nombre + "' no se creó porque ya existe o hubo un error.");
             }
-            System.out.println("");
+            System.out.println();
 
         } else if (decision.equals("2")) {      // Revisar las BD existentes en la carpeta
             File dbs = new File("Bases de Datos");
@@ -58,11 +59,11 @@ public class Main {
                     System.out.println(listado[i]);
                 }
             }
-            System.out.println("");
+            System.out.println();
 
         } else if (decision.equals("3")) {  // Agregar fila (v1, pendiente de modificacion)
             tabla.agregarFilaCSV("Robot", "Bases de Datos/Prueba");
-            System.out.println("");
+            System.out.println();
 
         } else if (decision.equals("4")) {  // Leer contenido completo
             System.out.print("Ingrese el nombre de la Base de Datos deseada: ");
@@ -72,27 +73,32 @@ public class Main {
             String ruta = "Bases de Datos/" + bd + "/" + archivo + ".csv";
 
             tabla.leerTablaCSV(ruta);
-            System.out.println("");
+            System.out.println();
         
         } else if (decision.equals("5")) {  // Hacer consultas a las BD
-            System.out.print("Ingrese la base de datos de la que quiere consultar: ");
-            String bd = scan.nextLine();
-            System.out.print("Ingrese la tabla de la base de datos '" + bd + "' de la que quiere consultar: ");
-            String archivo = scan.nextLine();
-            String ruta = "Bases de Datos/" + bd+ "/" + archivo + ".csv";
-
-            System.out.print("Ingrese la columna a buscar: ");
-            String nombreColumna = scan.nextLine();
-            System.out.print("Ingrese el valor a buscar en la columna '" + nombreColumna + "': ");
-            String valorBuscado = scan.nextLine();
-            System.out.println("");
-
-            tabla.consultar(ruta, nombreColumna, valorBuscado);
-            System.out.println("");
-
+            System.out.println("Siga el formato correspondiente de consultas:");
+            System.out.println("SELECT * FROM <nombre_tabla> WHERE <nombre_columna> == <valor_a_buscar>");
+            System.out.print("Consulta: ");
+            String consulta = scan.nextLine();
+            
+            if (consulta.matches("SELECT \\* FROM <\\w+> WHERE <\\w+> == <\\w+>")){
+                // Extracción de valores
+                Matcher matcher = Pattern.compile("<(\\w+)>").matcher(consulta);    // Expresion regular para extraer los valores entre <>
+                String[] valores = new String[3];
+                int i = 0;
+                while (matcher.find()) {
+                    valores[i++] = matcher.group(1);    // Extraer el valor capturado y almacenarlo en valores
+                }
+                System.out.println("Sintaxis valida");
+                System.out.println();
+                String ruta = "Bases de Datos/Prueba/" + valores[0] + ".csv";
+                tabla.consultar(ruta, valores[1], valores[2]);
+            } else {
+                System.out.println("Sintaxis invalida");
+            }
         } else {    // No supo acatar instrucciones :v
             System.out.println("Comando incorrecto, ingrese un comando valido.");
-            System.out.println("");
+            System.out.println();
             bienvenida(scan);
         }
     }
