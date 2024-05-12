@@ -12,14 +12,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Tabla {
     private ArrayList<String> columnas;
-    private ArrayList<String> filas;    // Hay que ver como adaptar esto al codigo, aun es manual la insercion
     private Map<String, Map<String, List<String[]>>> indices;     // Index para columnas especificas (clave=nombreColumna, valor=indiceColumna)
     private static final Lock lock = new ReentrantLock();
 
     // Constructor
     public Tabla() {
         this.columnas = new ArrayList<>();
-        this.filas = new ArrayList<>();
         this.indices = new HashMap<>();
     }
     //-------------------------------------------------------------------------------------------------------------
@@ -112,21 +110,19 @@ public class Tabla {
     //-------------------------------------------------------------------------------------------------------------
 
     // Insertar una fila en la tabla (se debe modificar) (se podria eliminar la ruta y poner una ruta por default)
-    public void agregarFilaCSV(String nombre, String ruta){
+    public void agregarFilaCSV(String data, String nombreTabla){
         try {
-            String route = ruta + "/" + nombre + ".csv";    // Temporalmente se hara asi
-            FileWriter fileWriter = new FileWriter(route, true);
+            String ruta = "Bases de Datos/Prueba/" + nombreTabla + ".csv";
+            FileWriter fileWriter = new FileWriter(ruta, true);
             BufferedWriter writer = new BufferedWriter(fileWriter);
 
-            // Agregar la nueva fila al final del archivo *(ejemplo para tabla Robot)
-            String nuevaFila = "1,1,true,"; // Reemplaza con los valores que se desean agregar
-            writer.write(nuevaFila);
+            writer.write(data);
             writer.newLine(); // Agrega una nueva línea después de la fila
 
             // Cerrar el escritor
             writer.close();
 
-            indexarColumna("id"+nombre, route); // Para poder indexarlas cuando se inserta un dato, guiandose del id de cada una
+            indexarColumna("id"+nombreTabla, ruta); // Para poder indexarlas cuando se inserta un dato, guiandose del id de cada una
 
             System.out.println("Se agregó una nueva fila al archivo CSV.");
         } catch (IOException e) {

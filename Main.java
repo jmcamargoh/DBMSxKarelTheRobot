@@ -62,7 +62,7 @@ public class Main {
             System.out.println();
 
         } else if (decision.equals("3")) {  // Agregar fila (v1, pendiente de modificacion)
-            tabla.agregarFilaCSV("Robot", "Bases de Datos/Prueba");
+            tabla.agregarFilaCSV("26,1,false,GREEN,SOUTH,", "Robot");
             System.out.println();
 
         } else if (decision.equals("4")) {  // Leer contenido completo
