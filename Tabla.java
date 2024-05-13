@@ -136,6 +136,7 @@ public class Tabla {
             e.printStackTrace();
         }
     }
+
     // -------------------------------------------------------------------------------------------------------------
 
     // Traer toda la informacion de la tabla

@@ -1,5 +1,6 @@
 import kareltherobot.*;
 import java.awt.Color;
+import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.Hashtable;
@@ -98,8 +99,9 @@ public class Minero extends AugmentedRobot implements Directions {
         // Métodos para actualizar y obtener datos de los robots
         // !!--------------------------------------------
         // Faltan atributos de updateRobotData
-        public static void updateRobotData(int id, int tipoRobot, boolean encendido) {
-            tabla.agregarFilaCSV(id + "," + tipoRobot + "," + encendido, "Robot");
+        public static void updateRobotData(int id, int tipoRobot, boolean encendido, String color,
+                Direction direccion) {
+            tabla.agregarFilaCSV(id + "," + tipoRobot + "," + encendido + "," + color + "," + direccion, "Robot");
             System.out.println("Robot Updated - ID: " + id + ", Tipo: " + tipoRobot + ", Encendido: " + encendido);
         }
 
@@ -162,7 +164,7 @@ public class Minero extends AugmentedRobot implements Directions {
         // !--------------------------------------------
         // Asigna el ID y luego incrementa el contador global
         this.id = nextRobotId++;
-        Database.updateRobotData(this.id, this.tipoRobot, true);
+        Database.updateRobotData(this.id, this.tipoRobot, true, convertirColor(color), direction);
         // --------------------------------------------
 
         objPosiciones.ocuparPosicion(posicion);
@@ -881,7 +883,7 @@ public class Minero extends AugmentedRobot implements Directions {
         turnOff();
         // !!--------------------------------------------
         // Registro inicial
-        Database.updateRobotData(this.id, this.tipoRobot, false);
+        // Database.updateRobotData(this.id, this.tipoRobot, true, color, direction);
         // --------------------------------------------
     }
 
@@ -1063,6 +1065,33 @@ public class Minero extends AugmentedRobot implements Directions {
         System.out.println("Datos guardados en CSV.");
         // --------------------------------------------
     }
+
+    // --------------------------------------------
+    public String convertirColor(Color color) {
+        // Obtiene los valores RGB del color
+        int red = color.getRed();
+        int green = color.getGreen();
+        int blue = color.getBlue();
+
+        // Compara los valores RGB con colores conocidos
+        if (red == 255 && green == 255 && blue == 255) {
+            return "Blanco";
+        } else if (red == 0 && green == 0 && blue == 0) {
+            return "Negro";
+        } else if (red == 255 && green == 0 && blue == 0) {
+            return "Rojo";
+        } else if (red == 0 && green == 255 && blue == 0) {
+            return "Verde";
+        } else if (red == 0 && green == 0 && blue == 255) {
+            return "Azul";
+        } else {
+            // Si el color no coincide con ninguno conocido, devuelve una cadena con los
+            // valores RGB
+            return "RGB(" + red + ", " + green + ", " + blue + ")";
+        }
+    }
+
+    // --------------------------------------------
 }
 
 class Posiciones {
