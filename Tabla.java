@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -177,6 +178,67 @@ public class Tabla {
         double time = (double) ((endTime-startTime)/1e6);
         System.out.println();
         System.out.println("Tiempo de Consulta = " + time + " milisegundos");
+    }
+    //-------------------------------------------------------------------------------------------------------------
+
+    // Eliminar fila (solo se hace por el ID de cada fila)
+    public void eliminar(String nombreTabla, String id) {
+        try {
+            String ruta = "Bases de Datos/Prueba/" + nombreTabla + ".csv";
+            long startTime = System.nanoTime();
+
+            // Abrir el archivo para lectura
+            BufferedReader reader = new BufferedReader(new FileReader(ruta));
+            
+            // Abrir un archivo temporal para escribir los datos actualizados
+            File archivoTemporal = new File("Bases de Datos/Prueba/temporal.csv");
+            FileWriter fileWriter = new FileWriter(archivoTemporal);
+            BufferedWriter writer = new BufferedWriter(fileWriter);
+            
+            // Variables para llevar el registro de la línea actual
+            String linea;
+            int numeroLinea = 0;
+
+            // Lee el archivo línea por línea
+            while ((linea = reader.readLine()) != null) {
+                // Incrementa el número de línea
+                numeroLinea++;
+                
+                // Si la línea comienza con el ID especificado, que escriba vacio
+                if (linea.startsWith(id)) {
+                    linea = "";
+                }
+                
+                // Escribir la linea si o si con lo que tenga
+                writer.write(linea);
+                writer.newLine();
+            }
+
+            writer.close();
+            reader.close();
+
+            // Borra el archivo original
+            File archivoOriginal = new File(ruta);
+            if (!archivoOriginal.delete()) {
+                System.out.println("No se pudo eliminar el archivo original.");
+                return;
+            }
+            
+            // Renombra el archivo temporal al nombre del archivo original
+            if (!archivoTemporal.renameTo(archivoOriginal)) {
+                System.out.println("No se pudo renombrar el archivo temporal.");
+            }
+
+            // Medir los tiempos de ejecucion
+            long endTime = System.nanoTime();
+            double time = (double) ((endTime-startTime)/1e6);
+            System.out.println();
+            System.out.println("Tiempo de Ejecucion = " + time + " milisegundos");
+
+            //indexarColumna("id"+nombreTabla, ruta);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     //-------------------------------------------------------------------------------------------------------------
 }
