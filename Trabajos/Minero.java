@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import DBMSxKarelTheRobot.Tabla;
 
 //public class Minero extends Robot implements Directions
 public class Minero extends AugmentedRobot implements Directions {
@@ -97,11 +96,15 @@ public class Minero extends AugmentedRobot implements Directions {
         private static Tabla tabla = new Tabla();
 
         // Métodos para actualizar y obtener datos de los robots
+        // !!--------------------------------------------
+        // Faltan atributos de updateRobotData
         public static void updateRobotData(int id, int tipoRobot, boolean encendido) {
             tabla.agregarFilaCSV(id + "," + tipoRobot + "," + encendido, "Robot");
             System.out.println("Robot Updated - ID: " + id + ", Tipo: " + tipoRobot + ", Encendido: " + encendido);
         }
 
+        // !!--------------------------------------------
+        // Faltan atributos idLogEvento de logEvento
         public static void logEvento(int idRobot, int avenidaActual, int calleActual, int sirenas) {
             LocalDateTime now = LocalDateTime.now();
             tabla.agregarFilaCSV(idRobot + "," + now + "," + avenidaActual + "," + calleActual + "," + sirenas,
@@ -110,6 +113,8 @@ public class Minero extends AugmentedRobot implements Directions {
                     + calleActual + ", Sirenas: " + sirenas);
         }
 
+        // !!--------------------------------------------
+        // Faltan atributos idupdateEstadoPrograma de logEvento
         public static void updateEstadoPrograma(int estado) {
             LocalDateTime now = LocalDateTime.now();
             tabla.agregarFilaCSV(now + "," + estado, "EstadoPrograma");
@@ -117,21 +122,21 @@ public class Minero extends AugmentedRobot implements Directions {
         }
 
         // Método para guardar todos los datos en archivos CSV
-        public static void saveDataToCSV() {
-            tabla.generarTablaCSV("Robot", "Bases de Datos/Prueba");
-            tabla.generarTablaCSV("LogEventos", "Bases de Datos/Prueba");
-            tabla.generarTablaCSV("EstadoPrograma", "Bases de Datos/Prueba");
-            tabla.generarTablaCSV("VariablesEstaticas", "Bases de Datos/Prueba");
-            System.out.println("Datos guardados en archivos CSV.");
-        }
+        // public static void saveDataToCSV() {
+        // tabla.generarTablaCSV("Robot", "Bases de Datos/Prueba");
+        // tabla.generarTablaCSV("LogEventos", "Bases de Datos/Prueba");
+        // tabla.generarTablaCSV("EstadoPrograma", "Bases de Datos/Prueba");
+        // tabla.generarTablaCSV("VariablesEstaticas", "Bases de Datos/Prueba");
+        // System.out.println("Datos guardados en archivos CSV.");
+        // }
 
         // Método para imprimir todos los datos de las tablas
-        public static void printAllData() {
-            tabla.leerTablaCSV("Bases de Datos/Prueba/Robot.csv");
-            tabla.leerTablaCSV("Bases de Datos/Prueba/LogEventos.csv");
-            tabla.leerTablaCSV("Bases de Datos/Prueba/EstadoPrograma.csv");
-            tabla.leerTablaCSV("Bases de Datos/Prueba/VariablesEstaticas.csv");
-        }
+        // public static void printAllData() {
+        // tabla.leerTablaCSV("Bases de Datos/Prueba/Robot.csv");
+        // tabla.leerTablaCSV("Bases de Datos/Prueba/LogEventos.csv");
+        // tabla.leerTablaCSV("Bases de Datos/Prueba/EstadoPrograma.csv");
+        // tabla.leerTablaCSV("Bases de Datos/Prueba/VariablesEstaticas.csv");
+        // }
     }
 
     // --------------------------------------------
@@ -170,7 +175,7 @@ public class Minero extends AugmentedRobot implements Directions {
     public void run() {
         ejecutarMina();
         // !--------------------------------------------
-        Database.saveDataToCSV();
+        // Database.saveDataToCSV();
         // --------------------------------------------
     }
 
@@ -1054,7 +1059,7 @@ public class Minero extends AugmentedRobot implements Directions {
         // Fin de Programa
         Database.updateEstadoPrograma(0);
         System.out.println("Estado del programa establecido a apagado.");
-        Database.saveDataToCSV();
+        // Database.saveDataToCSV();
         System.out.println("Datos guardados en CSV.");
         // --------------------------------------------
     }
