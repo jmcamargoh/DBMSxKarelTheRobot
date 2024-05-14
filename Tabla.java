@@ -181,8 +181,47 @@ public class Tabla {
     }
     //-------------------------------------------------------------------------------------------------------------
 
+    // Limpiar las tablas antes de ejecutar
+    public void limpiar_tablas(String tabla) {
+        String ruta = "Bases de Datos/Prueba/" + tabla + ".csv";
+
+        try {
+            // Abrir el archivo para lectura
+            BufferedReader reader = new BufferedReader(new FileReader(ruta));
+            
+            // Abrir un archivo temporal para escribir los datos actualizados
+            File archivoTemporal = new File("Bases de Datos/Prueba/temporal.csv");
+            FileWriter fileWriter = new FileWriter(archivoTemporal);
+            BufferedWriter writer = new BufferedWriter(fileWriter);
+
+            // Leer y escribir la primera línea sin cambios
+            String header = reader.readLine();
+            writer.write(header);
+            writer.newLine();
+
+            // Cerrar lectores y escritores
+            reader.close();
+            writer.close();
+
+            // Borra el archivo original
+            File archivoOriginal = new File(ruta);
+            if (!archivoOriginal.delete()) {
+                System.out.println("No se pudo eliminar el archivo original.");
+                return;
+            }
+
+            // Renombra el archivo temporal al nombre del archivo original
+            if (!archivoTemporal.renameTo(archivoOriginal)) {
+                System.out.println("No se pudo renombrar el archivo temporal.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //-------------------------------------------------------------------------------------------------------------
+
     // Eliminar fila (solo se hace por el ID de cada fila)
-    public void eliminar(String nombreTabla, String id) {
+    /*public void eliminar(String nombreTabla, String id) {
         try {
             String ruta = "Bases de Datos/Prueba/" + nombreTabla + ".csv";
             long startTime = System.nanoTime();
@@ -239,6 +278,6 @@ public class Tabla {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
     //-------------------------------------------------------------------------------------------------------------
 }

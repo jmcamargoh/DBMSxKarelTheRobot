@@ -21,11 +21,11 @@ public class Main {
         Tabla tabla = new Tabla(); // Instancia de la clase Tabla
         ExecutorService executor = Executors.newFixedThreadPool(4); // Pool de threads para el paralelismo
 
-        System.out.println("Presione 1 para crear una nueva Base de Datos");
+        System.out.println("Presione 1 para crear una nueva Base de Datos (solo ingresan datos a la Base de Datos 'Prueba')");
         System.out.println("Presione 2 para ver las Bases de Datos existentes");
-        System.out.println("Presione 3 para agregar una fila a una de las tablas");
-        System.out.println("Presione 4 para ver el contenido de una de las tablas");
-        System.out.println("Presione 5 para hacer consultas");
+        System.out.println("Presione 3 para agregar una fila a una de las tablas de la Base de Datos 'Prueba'");
+        System.out.println("Presione 4 para ver el contenido de una de las tablas de la Base de Datos 'Prueba'");
+        System.out.println("Presione 5 para hacer consultas de la Base de Datos 'Prueba'");
         System.out.print("Seleccione: ");
         String decision = scan.nextLine();
         System.out.println();
