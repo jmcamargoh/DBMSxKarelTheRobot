@@ -157,11 +157,11 @@ public class Minero extends AugmentedRobot implements Directions {
             }
         }
 
-        public static void limpiar_tablas() {
-            tabla.limpiar_tablas("Robot");
-            tabla.limpiar_tablas("LogEventos");
-            tabla.limpiar_tablas("EstadoPrograma");
-        }
+        // public static void limpiar_tablas() {
+        // tabla.limpiar_tablas("Robot");
+        // tabla.limpiar_tablas("LogEventos");
+        // tabla.limpiar_tablas("EstadoPrograma");
+        // }
 
         // Método para guardar todos los datos en archivos CSV
         // public static void saveDataToCSV() {
