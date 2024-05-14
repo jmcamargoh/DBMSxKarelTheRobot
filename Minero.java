@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 //public class Minero extends Robot implements Directions
 public class Minero extends AugmentedRobot implements Directions {
@@ -87,8 +89,14 @@ public class Minero extends AugmentedRobot implements Directions {
     private static Semaphore sem_trenInicioProceso;
     private static Semaphore sem_trenSalida;
 
+    // Locks
+    private static Lock lock_eventos = new ReentrantLock();
+    private static Lock lock_estado_programa = new ReentrantLock();
+
     // id de control
     private static int nextRobotId = 0;
+    private static int id_logEvento = 0;
+    private static int id_estadoPrograma = 0;
     // Creates Database
 
     // --------------------------------------------
@@ -97,30 +105,62 @@ public class Minero extends AugmentedRobot implements Directions {
         private static Tabla tabla = new Tabla();
 
         // Métodos para actualizar y obtener datos de los robots
-        // !!--------------------------------------------
-        // Faltan atributos de updateRobotData
+        // --------------------------------------------
         public static void updateRobotData(int id, int tipoRobot, boolean encendido, String color,
                 Direction direccion) {
             tabla.agregarFilaCSV(id + "," + tipoRobot + "," + encendido + "," + color + "," + direccion, "Robot");
+            System.out.println("Robot Updated - ID: " + id + ", Tipo: " + tipoRobot + ", Encendido: " + encendido +
+                    ", Color: " + color + ", Direction: " + direccion);
+        }
+
+        // --------------------------------------------
+        // Sobrecarga sin color y dirección por facilidad
+        public static void updateRobotData(int id, int tipoRobot, boolean encendido) {
+            tabla.agregarFilaCSV(id + "," + tipoRobot + "," + encendido, "Robot");
             System.out.println("Robot Updated - ID: " + id + ", Tipo: " + tipoRobot + ", Encendido: " + encendido);
         }
 
-        // !!--------------------------------------------
-        // Faltan atributos idLogEvento de logEvento
+        // --------------------------------------------
         public static void logEvento(int idRobot, int avenidaActual, int calleActual, int sirenas) {
             LocalDateTime now = LocalDateTime.now();
-            tabla.agregarFilaCSV(idRobot + "," + now + "," + avenidaActual + "," + calleActual + "," + sirenas,
-                    "LogEventos");
-            System.out.println("Event Logged - ID Robot: " + idRobot + ", Avenida: " + avenidaActual + ", Calle: "
+
+            // lock_eventos
+            lock_eventos.lock();
+            try {
+                tabla.agregarFilaCSV(
+                        id_logEvento + "," + idRobot + "," + now + "," + avenidaActual + "," + calleActual + ","
+                                + sirenas,
+                        "LogEventos");
+                id_logEvento += 1;
+                lock_eventos.unlock();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("Event Logged with ID:" + id_logEvento + ",ID Robot: " + idRobot + ", Avenida: "
+                    + avenidaActual + ", Calle: "
                     + calleActual + ", Sirenas: " + sirenas);
         }
 
-        // !!--------------------------------------------
-        // Faltan atributos idupdateEstadoPrograma de logEvento
+        // --------------------------------------------
         public static void updateEstadoPrograma(int estado) {
             LocalDateTime now = LocalDateTime.now();
-            tabla.agregarFilaCSV(now + "," + estado, "EstadoPrograma");
-            System.out.println("Program State Updated - Timestamp: " + now + ", Estado: " + estado);
+            lock_estado_programa.lock();
+            try {
+                tabla.agregarFilaCSV(id_estadoPrograma + "," + now + "," + estado, "EstadoPrograma");
+                System.out.println("Program State Updated with ID: " + id_estadoPrograma + "Timestamp: " + now
+                        + ", Estado: " + estado);
+                id_estadoPrograma += 1;
+                lock_estado_programa.unlock();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        public static void limpiar_tablas() {
+            tabla.limpiar_tablas("Robot");
+            tabla.limpiar_tablas("LogEventos");
+            tabla.limpiar_tablas("EstadoPrograma");
         }
 
         // Método para guardar todos los datos en archivos CSV
@@ -883,7 +923,7 @@ public class Minero extends AugmentedRobot implements Directions {
         turnOff();
         // !!--------------------------------------------
         // Registro inicial
-        // Database.updateRobotData(this.id, this.tipoRobot, true, color, direction);
+        Database.updateRobotData(this.id, this.tipoRobot, true);
         // --------------------------------------------
     }
 
