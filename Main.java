@@ -27,6 +27,7 @@ public class Main {
         System.out.println("Presione 3 para agregar una fila a una de las tablas de la Base de Datos 'Prueba'");
         System.out.println("Presione 4 para ver el contenido de una de las tablas de la Base de Datos 'Prueba'");
         System.out.println("Presione 5 para hacer consultas de la Base de Datos 'Prueba'");
+        System.out.println("Presione 6 para eliminartodo el contenido de las tablas de 'Prueba'");
         System.out.print("Seleccione: ");
         String decision = scan.nextLine();
         System.out.println();
@@ -98,6 +99,12 @@ public class Main {
             } else {
                 System.out.println("Sintaxis invalida");
             }
+        } else if (decision.equals("6")) {
+            tabla.limpiar_tablas("Robot");
+            tabla.limpiar_tablas("LogEventos");
+            tabla.limpiar_tablas("EstadoPrograma");
+            tabla.limpiar_tablas("VariablesEstaticas");
+
         } else { // No supo acatar instrucciones :v
             System.out.println("Comando incorrecto, ingrese un comando valido.");
             System.out.println();
