@@ -23,10 +23,9 @@ public class Main {
 
         System.out.println("Presione 1 para crear una nueva Base de Datos (solo ingresan datos a la Base de Datos 'Prueba')");
         System.out.println("Presione 2 para ver las Bases de Datos existentes");
-        System.out.println("Presione 3 para agregar una fila a una de las tablas de la Base de Datos 'Prueba'");
-        System.out.println("Presione 4 para ver el contenido de una de las tablas de la Base de Datos 'Prueba'");
-        System.out.println("Presione 5 para hacer consultas de la Base de Datos 'Prueba'");
-        System.out.println("Presione 6 para eliminartodo el contenido de las tablas de 'Prueba'");
+        System.out.println("Presione 3 para ver el contenido de una de las tablas de la Base de Datos 'Prueba'");
+        System.out.println("Presione 4 para hacer consultas de la Base de Datos 'Prueba'");
+        System.out.println("Presione 5 para eliminar todo el contenido de las tablas de 'Prueba'");
         System.out.print("Seleccione: ");
         String decision = scan.nextLine();
         System.out.println();
@@ -62,11 +61,7 @@ public class Main {
             }
             System.out.println();
 
-        } else if (decision.equals("3")) {  // Agregar fila (v1, pendiente de modificacion)
-            tabla.agregarFilaCSV("26,1,false,GREEN,SOUTH,", "Robot");
-            System.out.println();
-
-        } else if (decision.equals("4")) {  // Leer contenido completo
+        } else if (decision.equals("3")) {  // Leer contenido completo
             System.out.print("Ingrese el nombre de la Base de Datos deseada: ");
             String bd = scan.nextLine();
             System.out.print("Ingrese el nombre de la tabla a consultar: ");
@@ -76,7 +71,7 @@ public class Main {
             tabla.leerTablaCSV(ruta);
             System.out.println();
         
-        } else if (decision.equals("5")) {  // Hacer consultas a las BD
+        } else if (decision.equals("4")) {  // Hacer consultas a las BD
             System.out.println("Siga el formato correspondiente de consultas:");
             System.out.println("SELECT * FROM <nombre_tabla> WHERE <nombre_columna> == <valor_a_buscar>");
             System.out.print("Consulta: ");
@@ -97,11 +92,12 @@ public class Main {
             } else {
                 System.out.println("Sintaxis invalida");
             }
-        } else if (decision.equals("6")){
+        } else if (decision.equals("5")){
             tabla.limpiar_tablas("Robot");
             tabla.limpiar_tablas("LogEventos");
             tabla.limpiar_tablas("EstadoPrograma");
             tabla.limpiar_tablas("VariablesEstaticas");
+            System.out.println();
         
         } else {    // No supo acatar instrucciones :v
             System.out.println("Comando incorrecto, ingrese un comando valido.");

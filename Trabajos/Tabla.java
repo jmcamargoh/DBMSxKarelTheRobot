@@ -214,6 +214,8 @@ public class Tabla {
             if (!archivoTemporal.renameTo(archivoOriginal)) {
                 System.out.println("No se pudo renombrar el archivo temporal.");
             }
+
+            System.out.println("Tabla '" + tabla + ".csv' vaciada");
         } catch (IOException e) {
             e.printStackTrace();
         }
