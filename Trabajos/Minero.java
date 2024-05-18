@@ -833,6 +833,8 @@ public class Minero extends AugmentedRobot implements Directions {
                 pickBeeper();
                 i++;
                 sirenas++;
+                // Registro después de recoger un beeper
+                Database.updateRobotData(this.id, this.tipoRobot, true);
             } else {
                 if (!frontIsClear())
                     break;
@@ -849,6 +851,8 @@ public class Minero extends AugmentedRobot implements Directions {
             putBeeper();
             beepersExtraidos++;
             sirenas--;
+            // Registro después de descargar un beeper
+            Database.updateRobotData(this.id, this.tipoRobot, true);
         }
         ejecutarLog = (debugHabilitado)
                 ? logMensaje("Termine descarga. Si hay más de " + BEEPERS_TREN
@@ -907,6 +911,10 @@ public class Minero extends AugmentedRobot implements Directions {
         if (tipoRobot <= TIPO_TREN || (tipoRobot == TIPO_EXTRACTOR && calleActual == CALLE_ESPERA_EXT
                 && avenidaActual == AVENIDA_ESPERA_EXT))
             salirMina();
+
+        // Registro cuando el robot está saliendo de la mina
+        Database.updateRobotData(this.id, this.tipoRobot, true);
+
         // All robots go to the Initial Street + 1
         ejecutarLog = (debugHabilitado) ? logMensaje("Buscando mi casa.") : false;
         for (int i = calleActual; i <= calleInicial; i++)
@@ -920,11 +928,11 @@ public class Minero extends AugmentedRobot implements Directions {
         mover();
         turnAround();
         ejecutarLog = (debugHabilitado) ? logMensaje("Hora de dormir. Dulces sueños.") : false;
+
+        // Registro cuando el robot se apaga
+        Database.updateRobotData(this.id, this.tipoRobot, false);
+
         turnOff();
-        // !!--------------------------------------------
-        // Registro inicial
-        Database.updateRobotData(this.id, this.tipoRobot, true);
-        // --------------------------------------------
     }
 
     // Moves to the Train dropoff point when exit.
@@ -948,6 +956,8 @@ public class Minero extends AugmentedRobot implements Directions {
     // All robots does this 3 steps
     private void ejecutarMina() {
         ejecutarLog = (debugHabilitado) ? logMensaje("Empiezo proceso.") : false;
+        // Registro del inicio del proceso
+        Database.updateRobotData(this.id, this.tipoRobot, true);
         ingresoAlaMina();
         procesar();
         salirDeLaMina();
